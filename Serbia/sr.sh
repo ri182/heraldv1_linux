@@ -1,0 +1,1 @@
+sed '/^$/d' output_srz.csv > r_output_zgoog.csv

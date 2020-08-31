@@ -1,0 +1,662 @@
+#!/usr/bin/env python
+import time
+import sys
+import os
+import requests
+import csv
+import pandas as pd
+from multiprocessing import Pool
+import subprocess
+import glob
+from datetime import date
+
+
+def execfile(filepath):
+    import os
+    global_namespace = {
+        "__file__": filepath,
+        "__name__": "__main__",
+    }
+    with open(filepath, 'rb') as file:
+        exec(compile(file.read(), filepath, 'exec'), global_namespace)
+
+
+# Function for implementing the loading animation
+##Send zMail and tonberry request for Google news
+os.system("curl -L -m 2 http://tonberry.pw/ronz/ >> a.json")
+sys.stdout.write("Sending zMail...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/Z'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('z.mail')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+time.sleep(1)
+
+
+def load_animation():
+    # String to be displayed when the application is loading
+    load_str = "Herald is loading"
+    ls_len = len(load_str)
+
+    # String for creating the rotating line
+    animation = "|/-\\"
+    anicount = 0
+
+    # used to keep the track of
+    # the duration of animation
+    counttime = 0
+
+    # pointer for travelling the loading string
+    i = 0
+
+    while (counttime != 100):
+
+        # used to change the animation speed
+        # smaller the value, faster will be the animation
+        time.sleep(0.075)
+
+        # converting the string to list
+        # as string is immutable
+        load_str_list = list(load_str)
+
+        # x->obtaining the ASCII code
+        x = ord(load_str_list[i])
+
+        # y->for storing altered ASCII code
+        y = 0
+
+        # if the character is "." or " ", keep it unaltered
+        # switch uppercase to lowercase and vice-versa
+        if x != 32 and x != 46:
+            if x > 90:
+                y = x - 32
+            else:
+                y = x + 32
+            load_str_list[i] = chr(y)
+
+            # for storing the resultant string
+        res = ''
+        for j in range(ls_len):
+            res = res + load_str_list[j]
+
+            # displaying the resultant string
+        sys.stdout.write("\r" + res + animation[anicount])
+        sys.stdout.flush()
+
+        # Assigning loading string
+        # to the resultant string
+        load_str = res
+
+        anicount = (anicount + 1) % 4
+        i = (i + 1) % ls_len
+        counttime = counttime + 1
+
+    # for windows OS
+    if os.name == "nt":
+        os.system("cls")
+
+        # for linux / Mac OS
+    else:
+        os.system("clear")
+
+
+def waitingAnimation(n):
+    n, dots = n % 4 + 1, list(' ...')
+    dots[n - 1] = ' '
+    sys.stdout.write('\r Waiting' + ''.join(dots))
+    sys.stdout.flush()
+    time.sleep(0.5)
+    return n
+
+
+# Driver program
+
+if __name__ == '__main__':
+    load_animation()
+    # Your desired code continues from here
+    # s = input("Enter your name: ")
+    wbalk = "Balkans"
+    wkoso = "Kosova"
+    wrsrb = "RussiaSerbia"
+    wsrbi = "Serbia"
+    wnri = "RussianInfluence"
+    wcsr = "RussianInfluence"
+
+    ##Run API functions and conversions
+
+    print('\nStarting function')
+    sys.stdout.write("Getting " + str(wbalk) + "...\n")
+    execfile("./Balkans/news_a.py")
+    time.sleep(1)
+    execfile("./Balkans/news_b.py")
+    time.sleep(1)
+    sys.stdout.write("Getting " + str(wkoso) + "...\n")
+    execfile("./Kosova/news_a.py")
+    execfile("./Kosova/news_b.py")
+    time.sleep(1)
+    sys.stdout.write("Getting " + str(wrsrb) + "...\n")
+    execfile("./RussiaSerbia/news_a.py")
+    execfile("./RussiaSerbia/news_b.py")
+    time.sleep(1)
+    sys.stdout.write("Getting " + str(wsrbi) + "...\n")
+    execfile("./Serbia/news_a.py")
+    execfile("./Serbia/news_b.py")
+    sys.stdout.write("Getting RussianInfluence...\n")
+    execfile("./RussianInfluence/news_a.py")
+    execfile("./RussianInfluence/news_b.py")
+    sys.stdout.write("Getting ChinaSerbia...\n")
+    execfile("./ChinaSerbia/news_a.py")
+    execfile("./ChinaSerbia/news_b.py")
+    sys.stdout.write("Getting RussianSerbian...\n")
+    execfile("./RussianSerbian/news_a.py")
+    execfile("./RussianSerbian/news_b.py")
+    sys.stdout.write("Getting Lavrov...\n")
+    execfile("./Lavrov/news_a.py")
+    execfile("./Lavrov/news_b.py")
+    os.system("wget http://www.tonberry.pw/news_c_rs.json")
+
+    file_list = glob.glob('news_c_rs.json.1')
+    if len(file_list) > 0:
+        os.remove("news_c_rs.json")
+        os.rename('news_c_rs.json.1', 'news_c_rs.json')
+    sys.stdout.write("Duplicate found and renamed.\n")
+    time.sleep(2)
+    sys.stdout.write("Converting...\n")
+    execfile("./Balkans/csv_convert_a.py")
+    execfile("./Balkans/csv_convert_b.py")
+    time.sleep(1)
+    execfile("./Kosova/csv_convert_a.py")
+    execfile("./Kosova/csv_convert_b.py")
+    time.sleep(1)
+    execfile("./ChinaSerbia/csv_convert_a.py")
+    execfile("./ChinaSerbia/csv_convert_b.py")
+    time.sleep(1)
+    execfile("./RussiaSerbia/csv_convert_a.py")
+    execfile("./RussiaSerbia/csv_convert_b.py")
+    execfile("./RussianSerbian/csv_convert_a.py")
+    execfile("./RussianSerbian/csv_convert_b.py")
+    time.sleep(1)
+    execfile("./Serbia/csv_convert_a.py")
+    execfile("./Serbia/csv_convert_b.py")
+    time.sleep(1)
+    execfile("./Lavrov/csv_convert_a.py")
+    execfile("./Lavrov/csv_convert_b.py")
+    time.sleep(1)
+    execfile("./Serbia/csv_convert_c.py")
+    execfile("./RussianInfluence/csv_convert_a.py")
+    execfile("./RussianInfluence/csv_convert_b.py")
+    sys.stdout.write("Finished converting and appending.\n")
+    time.sleep(1)
+    sys.stdout.write("Sanitizing json...\n")
+    os.remove("news_a_bl.json")
+    os.remove("news_b_bl.json")
+    os.remove("news_a_rs.json")
+    os.remove("news_b_rs.json")
+    os.remove("news_a_ks.json")
+    os.remove("news_b_ks.json")
+    os.remove("news_a_ru.json")
+    os.remove("news_b_ru.json")
+    os.remove("news_a_ri.json")
+    os.remove("news_b_ri.json")
+    os.remove("news_a_cs.json")
+    os.remove("news_b_cs.json")
+    os.remove("news_a_rb.json")
+    os.remove("news_b_rb.json")
+    os.remove("news_a_lv.json")
+    os.remove("news_b_lv.json")
+
+    ##Crunch CSVs
+
+    sys.stdout.write("Crunching CSV...\n")
+
+    df = pd.read_csv('output_bk.csv', encoding='unicode_escape')
+    df.to_csv('r_output_bk.csv', index=False)
+
+    df = pd.read_csv('output_ks.csv', encoding='unicode_escape')
+    df.to_csv('r_output_ks.csv', index=False)
+
+    df = pd.read_csv('output_rs.csv', encoding='unicode_escape')
+    df.to_csv('r_output_rs.csv', index=False)
+
+    df = pd.read_csv('output_ri.csv', encoding='unicode_escape')
+    df.to_csv('r_output_ri.csv', index=False)
+
+    df = pd.read_csv('output_cs.csv', encoding='unicode_escape')
+    df.to_csv('r_output_cs.csv', index=False)
+
+    df = pd.read_csv('output_sr.csv', encoding='unicode_escape')
+    df.to_csv('r_output_sr.csv', index=False)
+
+    df = pd.read_csv('output_rb.csv', encoding='unicode_escape')
+    df.to_csv('r_output_rb.csv', index=False)
+  
+    df = pd.read_csv('output_lv.csv', encoding='unicode_escape')
+    df.to_csv('r_output_lv.csv', index=False)
+##Upload Balkans
+
+sys.stdout.write("Uploading 1/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/Balkans'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_bk.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+##Upload Kosova
+
+sys.stdout.write("Uploading 2/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/Kosova'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_ks.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+##Upload RussiaSerbia
+
+sys.stdout.write("Uploading 3/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/RS'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_rs.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+##Upload Serbia
+
+sys.stdout.write("Uploading 4/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/Serbia'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_sr.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+##Upload RussianInfluence
+
+sys.stdout.write("Uploading 5/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/RussianInfluence'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_sr.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+# Upload Google News
+
+sys.stdout.write("Uploading 6/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/Google'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('output_srz.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+# Upload ChinaSerbia
+
+sys.stdout.write("Uploading 7/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/ChinaSerbia'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('output_cs.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+dir_name = "./"
+test = os.listdir(dir_name)
+
+##Upload Serbia
+
+sys.stdout.write("Uploading 8/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/RussianSerbian'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_rb.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+
+##Upload InSerbian
+os.system("wget https://gatos-jabra-buster.azurewebsites.net/api/RssToCsv?url=http://rs.n1info.com/rss/249/Naslovna -O r_output_is.csv")
+sys.stdout.write("Uploading 9/9...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/InSerbian'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_is.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    pubDate = row[3]
+    title = row[0]
+    link = row[1]
+
+
+    data = {
+        "fields": {
+            "pubDate": pubDate,
+            "title": title,
+            "link": link
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+    
+##Upload Lavrov
+
+sys.stdout.write("Uploading Lavrov...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/Lavrov'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_lv.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    name = row[0]
+    number = row[1]
+    role = row[2]
+
+    data = {
+        "fields": {
+            "Time": name,
+            "Title": number,
+            "URL": role
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+
+##Upload B92
+os.system("wget https://gatos-jabra-buster.azurewebsites.net/api/RssToCsv?url=http://www.b92.net/info/rss/novo.xml -O r_output_b92.csv")
+sys.stdout.write("Uploading B92...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/B92'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_b92.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    pubDate = row[3]
+    title = row[0]
+    link = row[1]
+
+
+    data = {
+        "fields": {
+            "pubDate": pubDate,
+            "title": title,
+            "link": link
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+    
+##Upload B92
+os.system("wget https://gatos-jabra-buster.azurewebsites.net/api/RssToCsv?url=https://balkaninsight.com/feed/ -O r_output_bi.csv")
+sys.stdout.write("Uploading BalkanInsight...\n")
+
+post_url = 'https://api.airtable.com/v0/appqELtvF24gYtTyN/B92'
+post_headers = {
+    'Authorization': 'Bearer keygdLVLXS2jxQEqt',
+    'Content-Type': 'application/json'
+}
+
+f = open('r_output_bi.csv')
+csv_f = csv.reader(f)
+
+for row in csv_f:
+    pubDate = row[3]
+    title = row[0]
+    link = row[1]
+
+
+    data = {
+        "fields": {
+            "pubDate": pubDate,
+            "title": title,
+            "link": link
+        }
+    }
+
+    print(post_url)
+    print(data)
+
+    post_airtable_request = requests.post(post_url, headers=post_headers, json=data)
+    print(post_airtable_request.status_code)
+    
+
+
+##Sanitize
+for item in test:
+    if item.endswith(".json"):
+        os.remove(os.path.join(dir_name, item))
+for item in test:
+    if item.endswith(".csv"):
+        os.remove(os.path.join(dir_name, item))
+sys.stdout.write("Function complete.\n")
+os.remove('r_output_is.csv')
+today = date.today()
+print("Timeprint:", today)
